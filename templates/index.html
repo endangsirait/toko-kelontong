@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Profesional - Toko Kelontong </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-hover: #4338ca;
+            --success: #10b981;
+            --danger: #ef4444;
+            --bg-body: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+        }
+        body { font-family: 'Inter', sans-serif; margin: 0; background-color: var(--bg-body); color: var(--text-main); }
+        
+        header { background: linear-gradient(135deg, #1e1b4b, #312e81); color: white; padding: 25px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        header h2 { margin: 0; font-size: 22px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        header p { margin: 4px 0 0; font-size: 13px; color: #c7d2fe; }
+        
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: var(--card-bg); padding: 20px 24px; border-radius: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid var(--border); display: flex; align-items: center; gap: 16px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; background: #e0e7ff; color: var(--primary); }
+        .stat-info span { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        .stat-info h3 { margin: 4px 0 0; font-size: 20px; font-weight: 700; color: var(--text-main); border: none; padding: 0; }
+
+        .grid-dashboard { display: grid; grid-template-columns: 2fr 1fr; gap: 25px; margin-bottom: 25px; }
+        @media(max-width: 900px) { .grid-dashboard { grid-template-columns: 1fr; } }
+        
+        .card { background: var(--card-bg); padding: 25px; border-radius: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border: 1px solid var(--border); margin-bottom: 25px; }
+        .alert-box { background: #fef2f2; border-left: 5px solid var(--danger); color: #991b1b; padding: 16px 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 4px rgba(239,68,68,0.05); }
+        
+        h3 { margin-top: 0; color: var(--text-main); font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--border); padding-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 6px; font-weight: 600; font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+        input, select { width: 100%; padding: 11px 14px; border: 1px solid var(--border); border-radius: 10px; box-sizing: border-box; font-size: 14px; background-color: #f8fafc; transition: all 0.2s; }
+        input:focus, select:focus { outline: none; border-color: var(--primary); background-color: white; box-shadow: 0 0 0 4px rgba(79,70,229,0.1); }
+        
+        button { background-color: var(--primary); color: white; border: none; padding: 12px; width: 100%; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+        button:hover { background-color: var(--primary-hover); }
+        .btn-success { background-color: var(--success); }
+        .btn-success:hover { background-color: #059669; }
+        
+        .btn-export { background-color: rgba(255,255,255,0.15); color: white; padding: 10px 18px; border-radius: 10px; text-decoration: none; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; transition: 0.2s; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-export:hover { background-color: rgba(255,255,255,0.25); }
+        
+        table { width: 100%; margin-top: 10px; border-collapse: collapse; background: white; border-radius: 10px; overflow: hidden; }
+        th, td { border-bottom: 1px solid var(--border); padding: 14px 16px; text-align: left; font-size: 13px; }
+        th { background-color: #f8fafc; color: var(--text-muted); font-weight: 600; }
+        tr:hover { background-color: #f8fafc; }
+        
+        .badge-danger { background: #fee2e2; color: #991b1b; padding: 5px 10px; border-radius: 20px; font-weight: 600; font-size: 11px; }
+        .badge-success { background: #dcfce7; color: #166534; padding: 5px 10px; border-radius: 20px; font-weight: 600; font-size: 11px; }
+    </style>
+</head>
+<body>
+    <header>
+        <div>
+            <h2>🏪 Toko Kelontong </h2>
+            <p>Sistem Informasi Manajemen Kasir, Stok & Keuangan Real-Time</p>
+        </div>
+        <div>
+            <a href="/export_report" class="btn-export">📥 Unduh Laporan Excel</a>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <span>Total Pendapatan</span>
+                    <h3 style="color: var(--success);">Rp {{ "{:,}".format(total_pendapatan).replace(',', '.') }}</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fef3c7; color: #d97706;">📦</div>
+                <div class="stat-info">
+                    <span>Total Jenis Produk</span>
+                    <h3>{{ products|length }} Item</h3>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon" style="background: #fee2e2; color: var(--danger);">⚠️</div>
+                <div class="stat-info">
+                    <span>Stok Menipis</span>
+                    <h3 style="color: var(--danger);">{{ low_stock|length }} Barang</h3>
+                </div>
+            </div>
+        </div>
+
+        {% if low_stock %}
+        <div class="alert-box">
+            <strong>⚠️ Peringatan Restock Otomatis!</strong> Barang berikut hampir habis (Stok ≤ 5 Pcs) dan perlu segera diisi ulang:
+            <ul style="margin: 8px 0 0 20px; padding:0;">
+                {% for item in low_stock %}
+                <li><strong>{{ item.nama_barang }}</strong> — Sisa stok: <strong>{{ item.stok }} Pcs</strong></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="grid-dashboard">
+            <div class="card" style="margin-bottom:0;">
+                <h3>📈 Tren & Grafik Pendapatan</h3>
+                <div style="margin-top: 15px;">
+                    <canvas id="revenueChart" height="135"></canvas>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom:0;">
+                <h3>🛒 Kasir POS (Point of Sale)</h3>
+                <form action="/checkout" method="POST">
+                    <div class="form-group">
+                        <label>Pilih Produk:</label>
+                        <select name="product_id" required>
+                            <option value="">-- Pilih Barang Dagangan --</option>
+                            {% for p in products %}
+                            <option value="{{ p.id }}">{{ p.nama_barang }} (Stok: {{ p.stok }} | Rp {{ "{:,}".format(p.harga_jual).replace(',', '.') }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Jumlah Beli (Qty):</label>
+                        <input type="number" name="qty" min="1" placeholder="Masukkan jumlah..." required>
+                    </div>
+                    <button type="submit" class="btn-success">Proses Pembayaran & Potong Stok</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- FORM TAMBAH / UPDATE STOK OTOMATIS -->
+        <div class="card">
+            <h3>📦 Input Produk / Restock Barang</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top:0;">*Jika nama barang sudah ada, sistem akan otomatis menjumlahkan stoknya tanpa membuat baris baru.</p>
+            <form action="/add_product" method="POST" style="display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 20px; align-items: flex-end;">
+                <div class="form-group" style="margin:0;">
+                    <label>Nama Barang</label>
+                    <input type="text" name="nama_barang" placeholder="Contoh: beras 5kg" required>
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Jumlah Tambah Stok</label>
+                    <input type="number" name="stok" placeholder="Contoh: 10" required>
+                </div>
+                <div class="form-group" style="margin:0;">
+                    <label>Harga Jual (Rp)</label>
+                    <input type="number" name="harga_jual" placeholder="Contoh: 150000" required>
+                </div>
+                <button type="submit">Simpan / Restock</button>
+            </form>
+        </div>
+
+        <!-- TABEL INVENTARIS DENGAN TOMBOL RESTOK CEPAT -->
+        <div class="card">
+            <h3>📋 Status Inventaris Barang Toko</h3>
+            <table>
+                <tr>
+                    <th>ID</th>
+                    <th>Nama Barang</th>
+                    <th>Stok Tersedia</th>
+                    <th>Harga Jual</th>
+                    <th>Status Ketersediaan</th>
+                    <th>Aksi Restock Cepat</th>
+                </tr>
+                {% for p in products %}
+                <tr>
+                    <td>#{{ p.id }}</td>
+                    <td><strong>{{ p.nama_barang }}</strong></td>
+                    <td>{{ p.stok }} Pcs</td>
+                    <td>Rp {{ "{:,}".format(p.harga_jual).replace(',', '.') }}</td>
+                    <td>
+                        {% if p.stok <= 5 %}
+                            <span class="badge-danger">⚠️ Segera Restock</span>
+                        {% else %}
+                            <span class="badge-success">✅ Stok Aman</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="/restock/{{ p.id }}" method="POST" style="display: flex; gap: 8px;">
+                            <input type="number" name="tambah_stok" min="1" value="5" style="width: 70px; padding: 6px;" required>
+                            <button type="submit" style="width: auto; padding: 6px 12px; font-size: 12px;">+ Tambah</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- TABEL RIWAYAT TRANSAKSI -->
+        <div class="card">
+            <h3>📜 Riwayat Transaksi Penjualan Lengkap</h3>
+            <table>
+                <tr>
+                    <th>ID Transaksi</th>
+                    <th>Waktu</th>
+                    <th>Nama Barang</th>
+                    <th>Qty</th>
+                    <th>Total Pembayaran</th>
+                </tr>
+                {% for t in transactions %}
+                <tr>
+                    <td>#{{ t.id }}</td>
+                    <td>{{ t.tanggal }}</td>
+                    <td>{{ t.nama_barang }}</td>
+                    <td>{{ t.qty }} Pcs</td>
+                    <td><strong>Rp {{ "{:,}".format(t.total_harga).replace(',', '.') }}</strong></td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Mulai', 'Aktivitas Toko', 'Hari Ini'],
+                datasets: [{
+                    label: 'Tren Pendapatan (Rp)',
+                    data: [0, {{ total_pendapatan * 0.5 }}, {{ total_pendapatan }}],
+                    borderColor: '#4f46e5',
+                    backgroundColor: 'rgba(79, 70, 229, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 5,
+                    pointBackgroundColor: '#4f46e5'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+    </script>
+</body>
+</html>
